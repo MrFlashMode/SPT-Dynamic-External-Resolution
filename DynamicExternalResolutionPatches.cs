@@ -25,10 +25,12 @@ namespace DynamicExternalResolution
 
     public class PatchManager
     {
+
         public PatchManager()
         {
             this._patches = new List<ModulePatch>
             {
+                new DynamicExternalResolutionPatches.AmandsGraphicsOpticSightPatch(),
                 new DynamicExternalResolutionPatches.OpticSightOnEnablePath(),
                 new DynamicExternalResolutionPatches.OpticSightOnDisablePath(),
                 new DynamicExternalResolutionPatches.ClientFirearmControllerChangeAimingModePath(),
@@ -140,25 +142,55 @@ namespace DynamicExternalResolution
             {
                 return typeof(OpticSight).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic);
             }
-
+            
             [PatchPostfix]
             private static void PatchPostfix()
             {
-                if (!DynamicExternalResolutionConfig.EnableMod.Value)
+                if (DynamicExternalResolutionConfig.EnableMod.Value)
+                {
+                    Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                     if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
+                     {
+                         if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
+                         {
+                             SetResolutionAim();
+                         }
+                     }
+                }
+                else
                 {
                     return;
                 }
-                Player localPlayer = DynamicExternalResolution.getPlayetInstance();
-                if(localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
+            }
+        }
+
+        public class AmandsGraphicsOpticSightPatch : ModulePatch
+        {
+            protected override MethodBase GetTargetMethod()
+            {
+                return typeof(OpticSight).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic);
+            }
+            [PatchPostfix]
+            private static void PatchPostFix()
+            {
+                if (DynamicExternalResolutionConfig.EnableMod.Value)
                 {
-                    if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
+                    Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                    if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
                     {
-                        SetResolutionAim();
+                        if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
+                        {
+                            SetResolutionAim();
+                        }
                     }
+                }
+                else
+                {
+                    return;
                 }
             }
         }
-        
+
         public class OpticSightOnDisablePath : ModulePatch
         {
             protected override MethodBase GetTargetMethod()
