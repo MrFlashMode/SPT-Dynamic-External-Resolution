@@ -16,7 +16,7 @@ namespace DynamicExternalResolution
         {
             new PatchManager().RunPatches();
         }
-        
+
         public static void UnpatchAll()
         {
             new PatchManager().RunUnpatches();
@@ -44,7 +44,7 @@ namespace DynamicExternalResolution
                 patch.Enable();
             }
         }
-        
+
         public void RunUnpatches()
         {
             foreach (ModulePatch patch in this._patches)
@@ -60,11 +60,17 @@ namespace DynamicExternalResolution
     {
         private static void SetResolutionAim()
         {
+            bool DLSSEnabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.DLSSEnabled;
             bool FSREnabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSREnabled;
             bool FSR2Enabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSR2Enabled;
 
             float defaultSuperSamplingFactor = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.SuperSamplingFactor;
             float configSuperSamplingFactor = DynamicExternalResolutionConfig.SuperSampling.Value;
+
+            EAntialiasingMode defaultAAMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.AntiAliasing;
+
+            EDLSSMode defaultDLSSMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.DLSSMode;
+            EDLSSMode configDLSSMode = DynamicExternalResolutionConfig.DLSSMode.Value;
 
             EFSRMode defaultFSRMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSRMode;
             EFSRMode configFSRMode = DynamicExternalResolutionConfig.FSRMode.Value;
@@ -75,6 +81,10 @@ namespace DynamicExternalResolution
             if (!FSREnabled && !FSR2Enabled && (configSuperSamplingFactor < defaultSuperSamplingFactor))
             {
                 SetSuperSampling(1f - configSuperSamplingFactor);
+            }
+            else if (DLSSEnabled && (configDLSSMode != defaultDLSSMode))
+            {
+                SetAntiAliasing(defaultAAMode, configDLSSMode, defaultFSR2Mode);
             }
             else if (FSREnabled && (configFSRMode != defaultFSRMode))
             {
@@ -88,16 +98,23 @@ namespace DynamicExternalResolution
 
         private static void SetResolutionDefault()
         {
+            bool DLSSEnabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.DLSSEnabled;
             bool FSREnabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSREnabled;
             bool FSR2Enabled = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSR2Enabled;
 
             float defaultSuperSamplingFactor = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.SuperSamplingFactor;
+            EAntialiasingMode defaultAAMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.AntiAliasing;
+            EDLSSMode defaultDLSSMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.DLSSMode;
             EFSRMode defaultFSRMode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSRMode;
             EFSR2Mode defaultFSR2Mode = Singleton<SharedGameSettingsClass>.Instance.Graphics.Settings.FSR2Mode;
 
             if (!FSREnabled && !FSR2Enabled)
             {
                 SetSuperSampling(defaultSuperSamplingFactor);
+            }
+            else if (DLSSEnabled)
+            {
+                SetAntiAliasing(defaultAAMode, defaultDLSSMode, defaultFSR2Mode);
             }
             else if (FSREnabled)
             {
@@ -115,6 +132,15 @@ namespace DynamicExternalResolution
             if (camera != null)
             {
                 camera.SetSuperSampling(Mathf.Clamp(value, 0.01f, 1f));
+            }
+        }
+
+        private static void SetAntiAliasing(EAntialiasingMode quality, EDLSSMode value, EFSR2Mode fsr2Mode)
+        {
+            CameraClass camera = DynamicExternalResolution.getCameraInstance();
+            if (camera != null)
+            {
+                camera.SetAntiAliasing(quality, value, fsr2Mode);
             }
         }
 
@@ -142,20 +168,20 @@ namespace DynamicExternalResolution
             {
                 return typeof(OpticSight).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic);
             }
-            
+
             [PatchPostfix]
             private static void PatchPostfix()
             {
                 if (DynamicExternalResolutionConfig.EnableMod.Value)
                 {
                     Player localPlayer = DynamicExternalResolution.getPlayetInstance();
-                     if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
-                     {
-                         if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
-                         {
-                             SetResolutionAim();
-                         }
-                     }
+                    if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
+                    {
+                        if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
+                        {
+                            SetResolutionAim();
+                        }
+                    }
                 }
                 else
                 {
@@ -209,7 +235,7 @@ namespace DynamicExternalResolution
                 }
             }
         }
-        
+
         public class ClientFirearmControllerChangeAimingModePath : ModulePatch
         {
             protected override MethodBase GetTargetMethod()
@@ -221,8 +247,8 @@ namespace DynamicExternalResolution
             private static void PatchPostfix()
             {
                 Player localPlayer = DynamicExternalResolution.getPlayetInstance();
-                
-                if(localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
+
+                if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
                 {
                     if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
                     {
