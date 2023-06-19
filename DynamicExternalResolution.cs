@@ -9,14 +9,14 @@ namespace DynamicExternalResolution
     {
         static Player _localPlayer = null;
 
-        public static Player getPlayetInstance()
+        public static Player getPlayerInstance()
         {
             if (_localPlayer != null)
             {
                 return _localPlayer;
             }
             
-            _localPlayer = FindObjectOfType<Player>();
+            _localPlayer = FindObjectOfType<LocalPlayer>();
             return _localPlayer;
         }
         

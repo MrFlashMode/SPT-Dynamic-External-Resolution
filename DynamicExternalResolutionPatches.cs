@@ -174,7 +174,7 @@ namespace DynamicExternalResolution
             {
                 if (DynamicExternalResolutionConfig.EnableMod.Value)
                 {
-                    Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                    Player localPlayer = DynamicExternalResolution.getPlayerInstance();
                     if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
                     {
                         if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
@@ -201,7 +201,7 @@ namespace DynamicExternalResolution
             {
                 if (DynamicExternalResolutionConfig.EnableMod.Value)
                 {
-                    Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                    Player localPlayer = DynamicExternalResolution.getPlayerInstance();
                     if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
                     {
                         if (localPlayer.ProceduralWeaponAnimation.CurrentScope.IsOptic)
@@ -227,7 +227,7 @@ namespace DynamicExternalResolution
             [PatchPostfix]
             private static void PatchPostfix()
             {
-                Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                Player localPlayer = DynamicExternalResolution.getPlayerInstance();
 
                 if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null)
                 {
@@ -246,7 +246,7 @@ namespace DynamicExternalResolution
             [PatchPostfix]
             private static void PatchPostfix()
             {
-                Player localPlayer = DynamicExternalResolution.getPlayetInstance();
+                Player localPlayer = DynamicExternalResolution.getPlayerInstance();
 
                 if (localPlayer != null && localPlayer.ProceduralWeaponAnimation != null && localPlayer.ProceduralWeaponAnimation.IsAiming && localPlayer.ProceduralWeaponAnimation.CurrentAimingMod != null && localPlayer.ProceduralWeaponAnimation.CurrentScope != null)
                 {
