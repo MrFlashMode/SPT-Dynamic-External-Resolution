@@ -8,9 +8,7 @@ namespace DynamicExternalResolution
     public class DynamicExternalResolution : BaseUnityPlugin
     {
         static Player _localPlayer = null;
-        
-        static CameraClass _camera = null;
-        
+
         public static Player getPlayetInstance()
         {
             if (_localPlayer != null)
@@ -24,13 +22,7 @@ namespace DynamicExternalResolution
         
         public static CameraClass getCameraInstance()
         {
-            if (_camera != null)
-            {
-                return _camera;
-            }
-            
-            _camera = CameraClass.Instance;
-            return _camera;
+            return CameraClass.Instance;
         }
         
         private void Awake()
