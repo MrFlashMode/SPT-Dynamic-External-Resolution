@@ -4,34 +4,34 @@ using EFT;
 
 namespace DynamicExternalResolution
 {
-    [BepInPlugin("com.DynamicExternalResolution", "Dynamic External Resolution", "1.0")]
+    [BepInPlugin("com.DynamicExternalResolution", "Dynamic External Resolution", "1.3")]
     public class DynamicExternalResolution : BaseUnityPlugin
     {
-        static Player _localPlayer = null;
+        private static Player _localPlayer = null;
 
-        public static Player getPlayetInstance()
+        public static Player getPlayerInstance()
         {
             if (_localPlayer != null)
             {
                 return _localPlayer;
             }
-            
-            _localPlayer = FindObjectOfType<Player>();
+
+            _localPlayer = FindObjectOfType<LocalPlayer>();
             return _localPlayer;
         }
-        
+
         public static CameraClass getCameraInstance()
         {
             return CameraClass.Instance;
         }
-        
+
         private void Awake()
         {
             DynamicExternalResolutionConfig.Init(Config);
             Patcher.PatchAll();
             Logger.LogInfo($"Plugin Dynamic External Resolution is loaded!");
         }
-        
+
         private void OnDestroy()
         {
             Patcher.UnpatchAll();
