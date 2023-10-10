@@ -202,7 +202,8 @@ namespace DynamicExternalResolution
 
             if (camera != null)
             {
-                camera.SetSuperSampling(Mathf.Clamp(sampling, 0f, 1f));
+                //camera.SetSuperSampling(Mathf.Clamp(sampling, 0f, 1f));
+                camera.SSAA.GetComponent<SSAAImpl>().Switch(Mathf.Clamp(sampling, 0f, 1f));
             }
         }
 
